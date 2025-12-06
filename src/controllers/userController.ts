@@ -1,14 +1,13 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { AuthRequest } from '../types/auth'
 
-const authMe = async (req: AuthRequest, res: Response) => {
+const authMe = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { user } = req
 
     return res.status(200).json({ user })
   } catch (error) {
-    console.log('Error when creating user: ', error)
-    res.status(500).json({ message: 'Intenal server error: ', error })
+    next(error)
   }
 }
 

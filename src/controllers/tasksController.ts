@@ -1,104 +1,59 @@
 import mongoose from 'mongoose'
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import Task from '../models/Tasks'
+import { taskContainer } from '../container/taskContainer'
+import { BadRequestError } from '../types/httpError'
 
-const getAllTasks = async (req: Request, res: Response) => {
+export const getAllTasks = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { filter = 'all' } = req.query
-    const now = new Date()
-    let startDate
+    const userId = req.params.userId
+    const filter = (req.query.filter as string) ?? 'all'
 
-    switch (filter) {
-      case 'today':
-        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-        break
-      case 'week':
-        const mondayDate = now.getDate() - (now.getDay() - 1) - (now.getDay() === 0 ? 7 : 0)
-        startDate = new Date(now.getFullYear(), now.getMonth(), mondayDate)
-        break
-      case 'month':
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-        break
-      case 'all':
-      default:
+    if (!userId || !req.query || !filter) {
+      return next(new BadRequestError('The task is missing on the parameter'))
     }
+    const result = await taskContainer.taskService.getAllTasks(userId, filter)
 
-    const userId = new mongoose.Types.ObjectId(req.params.userId)
-    const query = startDate ? { userId, createdAt: { $gte: startDate } } : { userId }
-
-    const result = await Task.aggregate([
-      {
-        $match: query
-      },
-      {
-        $facet: {
-          tasks: [{ $sort: { createdAt: -1 } }],
-          activeTask: [{ $match: { status: 'active' } }, { $count: 'count' }],
-          completedTask: [{ $match: { status: 'completed' } }, { $count: 'count' }]
-        }
-      }
-    ])
-
-    const tasks = result[0].tasks
-    const activeTask = result[0].activeTask[0]?.count || 0
-    const completedTask = result[0].completedTask[0]?.count || 0
-
-    //const activeTask = await Task.countDocuments({status: "active"})
-    res.status(200).json({ tasks, activeTask, completedTask })
+    res.status(200).json({ ...result })
   } catch (error) {
-    console.error('Error when getting all tasks', error)
-    res.status(500).json({ message: 'System error' })
+    next(error)
   }
 }
 
-const createTask = async (req: Request, res: Response) => {
+export const createTask = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = req.body
-    const task = new Task({ ...payload })
-    const newTask = await task.save()
+    const newTask = await taskContainer.taskService.create(payload)
     res.status(201).json(newTask)
   } catch (error) {
-    console.error('Error when creating new task', error)
-    res.status(500).json({ message: 'System error' })
+    next(error)
   }
 }
 
-const updateTask = async (req: Request, res: Response) => {
+export const updateTask = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { title, status, completedAt } = req.body
-
-    const updatedTask = await Task.findByIdAndUpdate(
-      req.params.id,
-      {
-        title,
-        status,
-        completedAt
-      },
-      { new: true }
-    )
-
-    if (!updatedTask) {
-      res.status(404).json({ message: `The taskId ${req.params.id} is not existed` })
+    const taskId = req.params.id
+    if (!taskId) {
+      return next(new BadRequestError('The task is missing on the parameter'))
     }
+
+    const updatedTask = await taskContainer.taskService.update(taskId, { ...req.body })
 
     res.status(201).json(updatedTask)
   } catch (error) {
-    console.error('Error when updating the task', error)
-    res.status(500).json({ message: 'System error' })
+    next(error)
   }
 }
 
-const deleteTask = async (req: Request, res: Response) => {
+export const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const deletedTask = await Task.findByIdAndDelete(req.params.id)
-    if (!deletedTask) {
-      res.status(404).json({ message: `The taskId ${req.params.id} is not existed` })
+    const taskId = req.params.id
+    if (!taskId) {
+      return next(new BadRequestError('The task is missing on the parameter'))
     }
+    await taskContainer.taskService.delete(taskId)
     res.status(200).json({ message: 'Task deleted' })
   } catch (error) {
-    console.error('Error when deleting the task', error)
-    res.status(500).json({ message: 'System error' })
+    next(error)
   }
 }
-
-export { getAllTasks, createTask, updateTask, deleteTask }

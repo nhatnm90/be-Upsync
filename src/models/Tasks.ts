@@ -1,4 +1,16 @@
-import mongoose from 'mongoose'
+import mongoose, { Model, Document } from 'mongoose'
+
+const LOG_TASK_STATUS = ['active', 'completed'] as const
+export type TaskStatus = (typeof LOG_TASK_STATUS)[number]
+
+export interface ITask {
+  title: string
+  status: TaskStatus
+  completedAt: Date | null
+  userId: mongoose.Types.ObjectId
+}
+
+export interface ITaskDocument extends ITask, Document {}
 
 const taskSchema = new mongoose.Schema(
   {
@@ -9,7 +21,7 @@ const taskSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['active', 'completed'],
+      enum: LOG_TASK_STATUS,
       default: 'active'
     },
     completedAt: {
@@ -28,5 +40,5 @@ const taskSchema = new mongoose.Schema(
   }
 )
 
-const Task = mongoose.model('Task', taskSchema)
+const Task: Model<ITaskDocument> = mongoose.model<ITaskDocument>('Task', taskSchema)
 export default Task

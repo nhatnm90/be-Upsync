@@ -1,34 +1,37 @@
-import { IUser } from './../models/User'
 import jwt from 'jsonwebtoken'
-import User from '../models/User'
 import { NextFunction, Request, Response } from 'express'
 import { JwtUserPayload } from '../types/auth'
 import { AuthRequest } from '../types/auth'
+import { ForbiddenError, UnauthorizedError } from '../types/httpError'
+import { userContainer } from '../container/userContainer'
 
 export const protectRoute = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers['authorization']
-
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      // Kiểm tra cả prefix
+      return next(new UnauthorizedError('Token is missing or improperly formatted'))
+    }
     const accessToken = authHeader?.split(' ')[1] // get Bearer token
 
     if (!accessToken) {
-      return res.status(401).json({ message: 'Token is not existed' })
+      return next(new UnauthorizedError('Token is not existed'))
     }
 
-    const secret = process.env.ACCESS_TOKEN_SECRET || 'upsync'
+    const secret = process.env.ACCESS_TOKEN_SECRET
+    if (!secret) throw new Error('ACCESS_TOKEN_SECRET is not set in environment variables')
 
     const decodedUser = jwt.verify(accessToken, secret) as JwtUserPayload
     if (!decodedUser.userId) {
-      return res.status(403).json({ message: 'Invalid token payload' })
+      return next(new ForbiddenError('Invalid token payload'))
     }
-    const existedUser = await User.findById(decodedUser.userId).select('-hashedPassword').lean<IUser>()
+    const existedUser = await userContainer.userService.findOne({ id: decodedUser.userId }, true)
     if (!existedUser) {
-      return res.status(403).json({ message: 'Invalid token payload' })
+      return next(new ForbiddenError('Invalid token payload'))
     }
     req.user = existedUser
     next()
   } catch (error) {
-    console.log('Error when authorizing user in Middleware: ', error)
-    res.status(500).json({ message: 'Internal server error' })
+    next(error)
   }
 }

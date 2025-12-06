@@ -13,7 +13,7 @@ const userSessionSchema = new mongoose.Schema(
       required: true,
       unique: true
     },
-    expriredAt: {
+    expiredAt: {
       type: Date,
       required: true
     }
@@ -24,7 +24,13 @@ const userSessionSchema = new mongoose.Schema(
 )
 
 // index dùng để tự động xóa refreshToken khi expired
-userSessionSchema.index({ expriredAt: 1 }, { expireAfterSeconds: 0 })
+userSessionSchema.index({ expiredAt: 1 }, { expireAfterSeconds: 0 })
 
 const UserSession = mongoose.model('UserSession', userSessionSchema)
 export default UserSession
+
+export interface IUserSession {
+  userId: string
+  refreshToken: string
+  expiredAt: Date
+}

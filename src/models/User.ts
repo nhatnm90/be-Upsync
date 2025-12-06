@@ -1,6 +1,21 @@
-import mongoose from 'mongoose'
+import mongoose, { Document, Model } from 'mongoose'
 
 const LOG_IN_TYPE = ['EMAIL', 'GOOGLE', 'FACEBOOK', 'ICLOUD', 'OTHERS']
+
+export interface IUserDocument extends Document {
+  username: string
+  hashedPassword: string // required đúng với schema
+  email: string
+  firstName: string
+  lastName: string
+  avatarUrl?: string
+  avatarId?: string
+  bio?: string
+  phone?: string
+  logInType?: 'EMAIL' | 'GOOGLE' | 'FACEBOOK' | 'ICLOUD' | 'OTHERS'
+  createdAt: Date
+  updatedAt: Date
+}
 
 const userSchema = new mongoose.Schema(
   {
@@ -12,8 +27,8 @@ const userSchema = new mongoose.Schema(
       lowercase: true
     },
     hashedPassword: {
-      type: String
-      // required: true
+      type: String,
+      required: true
     },
     email: {
       type: String,
@@ -56,18 +71,5 @@ const userSchema = new mongoose.Schema(
   }
 )
 
-const User = mongoose.model('User', userSchema)
+const User: Model<IUserDocument> = mongoose.model<IUserDocument>('User', userSchema)
 export default User
-
-export interface IUser {
-  username: string
-  hashedPassword?: string
-  email: string
-  firstName: string
-  lastName: string
-  avatarUrl?: string
-  avatarId?: string
-  bio?: string
-  phone?: string
-  logInType?: 'EMAIL' | 'GOOGLE' | 'FACEBOOK' | 'ICLOUD' | 'OTHERS'
-}

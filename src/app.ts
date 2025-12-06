@@ -1,10 +1,12 @@
-import express from 'express'
+import { globalErrorMiddleware } from './middlewares/globalErrorMiddleware'
+import express, { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import authRoute from './routes/authRoute'
 import { protectRoute } from './middlewares/authMiddleware'
 import taskRoute from './routes/tasksRoute'
 import userRoute from './routes/userRoute'
+import { BadRequestError, HttpError } from './types/httpError'
 
 const app = express()
 // app.use(cors())
@@ -26,5 +28,8 @@ app.use('/api/tasks', protectRoute, taskRoute)
 // private routes
 // app.use(protectRoute)
 app.use('/api/user', protectRoute, userRoute)
+
+// middleware to handle all error before response
+app.use(globalErrorMiddleware)
 
 export default app
