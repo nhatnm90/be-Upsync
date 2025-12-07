@@ -1,15 +1,14 @@
-import { globalErrorMiddleware } from './middlewares/globalErrorMiddleware'
-import express, { Request, Response, NextFunction } from 'express'
+import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import authRoute from './routes/authRoute'
-import { protectRoute } from './middlewares/authMiddleware'
-import taskRoute from './routes/tasksRoute'
-import userRoute from './routes/userRoute'
-import { BadRequestError, HttpError } from './types/httpError'
+import authRoute from './insfrastructure/express/routes/authRoute'
+import taskRoute from './insfrastructure/express/routes/tasksRoute'
+import userRoute from './insfrastructure/express/routes/userRoute'
+import { protectRoute } from './insfrastructure/persistence/middlewares/authMiddleware'
+import { globalErrorMiddleware } from './insfrastructure/persistence/middlewares/globalErrorMiddleware'
 
 const app = express()
-// app.use(cors())
+
 app.use(express.json())
 app.use(cookieParser())
 

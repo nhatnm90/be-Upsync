@@ -1,7 +1,7 @@
-import { MongoUserRepository } from '../repositories/Mongo/MongoUserRepository'
-import { UserService } from '../services/userService'
-
 // Use the container to config the suitable repository
+import { UserService } from '../application/services/userService'
+import { MongoUserRepository } from '../insfrastructure/persistence/repositories/MongoUserRepository'
+
 // Controller and Service does not need to update when change to other database
 const mongoUserRepo = new MongoUserRepository()
 //const postgresTaskRepo = new ...

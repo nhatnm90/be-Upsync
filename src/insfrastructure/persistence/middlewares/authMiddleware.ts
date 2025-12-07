@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken'
 import { NextFunction, Request, Response } from 'express'
-import { JwtUserPayload } from '../types/auth'
-import { AuthRequest } from '../types/auth'
-import { ForbiddenError, UnauthorizedError } from '../types/httpError'
-import { userContainer } from '../container/userContainer'
+import { AuthRequest, JwtUserPayload } from '../../../types/auth'
+import { ForbiddenError, UnauthorizedError } from '../../../types/httpError'
+import { userContainer } from '../../../container/userContainer'
 
 export const protectRoute = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

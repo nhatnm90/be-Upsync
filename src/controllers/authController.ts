@@ -1,8 +1,8 @@
-import User from '../models/User'
+import UserModel from '../insfrastructure/models/userModel'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import UserSession from '../models/UserSession'
+import UserSessionModel from '../insfrastructure/models/userSessionModel'
 import { NextFunction, Request, Response } from 'express'
 import {
   BadRequestError,
@@ -38,7 +38,6 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
-    // TODO: aaa
     await userContainer.userService.create({ username, hashedPassword, firstName, lastName, email })
 
     return res.status(204).json({ message: 'User created' })
@@ -92,10 +91,12 @@ const signInWithExternal = async (req: Request, res: Response, next: NextFunctio
 
     const username = name.trim().toLowerCase().split(' ').join('_')
 
-    let exitedUser = await userContainer.userService.findOne({ ...email })
+    let exitedUser = await userContainer.userService.findOne({ email })
     if (!exitedUser) {
       // create new user
+      const hashedPassword = await bcrypt.hash(username, 10)
       exitedUser = await userContainer.userService.create({
+        hashedPassword,
         email,
         logInType: type,
         firstName,
@@ -151,7 +152,7 @@ const refreshToken = async (req: Request, res: Response, next: NextFunction) => 
       return next(new BadRequestError('Token is not existed'))
     }
 
-    const existedRefreshToken = await UserSession.findOne({ refreshToken })
+    const existedRefreshToken = await UserSessionModel.findOne({ refreshToken })
 
     if (!existedRefreshToken) {
       return next(new BadRequestError('Token is not existed'))

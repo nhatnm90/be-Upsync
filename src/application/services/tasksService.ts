@@ -1,5 +1,5 @@
-import { ITask } from '../models/Tasks'
-import { ITaskRepository } from '../repositories/interface/ITaskRepository'
+import { Task } from '../../domain/entities/task'
+import { ITaskRepository } from '../interface/ITaskRepository'
 
 export class TaskService {
   constructor(private taskRepo: ITaskRepository) {}
@@ -7,17 +7,17 @@ export class TaskService {
   async getAllTasks(
     userId: string,
     filter: string
-  ): Promise<{ tasks: ITask[]; activeTask: number; completedTask: number }> {
+  ): Promise<{ tasks: Task[]; activeTask: number; completedTask: number }> {
     const result = await this.taskRepo.getAllTasks(userId, filter)
     return result
   }
 
-  async create(payload: Partial<ITask>) {
-    const data: Partial<ITask> = { ...payload }
+  async create(payload: Partial<Task>) {
+    const data: Partial<Task> = { ...payload }
     await this.taskRepo.create(data)
   }
 
-  async update(taskId: string, payload: Partial<ITask>) {
+  async update(taskId: string, payload: Partial<Task>) {
     await this.taskRepo.update(taskId, payload)
   }
 

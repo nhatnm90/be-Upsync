@@ -2,7 +2,7 @@ import mongoose, { Document, Model } from 'mongoose'
 
 const LOG_IN_TYPE = ['EMAIL', 'GOOGLE', 'FACEBOOK', 'ICLOUD', 'OTHERS']
 
-export interface IUserDocument extends Document {
+export interface IUserModelDocument extends Document {
   username: string
   hashedPassword: string // required đúng với schema
   email: string
@@ -71,5 +71,5 @@ const userSchema = new mongoose.Schema(
   }
 )
 
-const User: Model<IUserDocument> = mongoose.model<IUserDocument>('User', userSchema)
-export default User
+const UserModel: Model<IUserModelDocument> = mongoose.model<IUserModelDocument>('UserModel', userSchema)
+export default UserModel

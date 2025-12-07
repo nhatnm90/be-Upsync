@@ -1,13 +1,14 @@
-import { ITaskRepository } from '../interface/ITaskRepository'
-import Task, { ITask } from '../../models/Tasks'
-import { NotFoundError } from '../../types/httpError'
 import mongoose from 'mongoose'
+import TaskModel, { ITaskModelDocument } from '../../models/taskModel'
+import { ITaskRepository } from '../../../application/interface/ITaskRepository'
+import { Task } from '../../../domain/entities/task'
+import { TaskStatus } from '../../../libs/constant'
 
 export class MongoTaskRepository implements ITaskRepository {
   async getAllTasks(
     userId: string,
     filter: string
-  ): Promise<{ tasks: ITask[]; activeTask: number; completedTask: number }> {
+  ): Promise<{ tasks: Task[]; activeTask: number; completedTask: number }> {
     const now = new Date()
     let startDate
 
@@ -29,7 +30,7 @@ export class MongoTaskRepository implements ITaskRepository {
     const _userId = new mongoose.Types.ObjectId(userId)
     const query = startDate ? { userId: _userId, createdAt: { $gte: startDate } } : { userId: _userId }
 
-    const result = await Task.aggregate([
+    const result = await TaskModel.aggregate([
       {
         $match: query
       },
@@ -41,20 +42,20 @@ export class MongoTaskRepository implements ITaskRepository {
         }
       }
     ])
-    const tasks = result[0].tasks as ITask[]
+    const tasks = this.toListEntity(result[0].tasks)
     const activeTask = result[0].activeTask[0]?.count || 0
     const completedTask = result[0].completedTask[0]?.count || 0
     return { tasks, activeTask, completedTask }
   }
 
-  async create(payload: Partial<ITask>): Promise<ITask> {
-    const task = new Task(payload)
+  async create(payload: Partial<Task>): Promise<Task> {
+    const task = new TaskModel(payload)
     const newTask = await task.save()
-    return newTask.toObject()
+    return this.toEntity(newTask)
   }
 
-  async update(taskId: string, payload: Partial<ITask>) {
-    const updatedTask = await Task.findByIdAndUpdate(
+  async update(taskId: string, payload: Partial<Task>) {
+    const updatedTask = await TaskModel.findByIdAndUpdate(
       taskId,
       {
         title: payload.title,
@@ -63,13 +64,27 @@ export class MongoTaskRepository implements ITaskRepository {
       },
       { new: true }
     ).orFail(new Error(`The task Id ${taskId} is not found`))
-    return updatedTask.toObject()
+    return this.toEntity(updatedTask)
   }
 
   async delete(taskId: string) {
-    const deletedTask = await Task.findByIdAndDelete({ _id: taskId }).orFail(
+    const deletedTask = await TaskModel.findByIdAndDelete({ _id: taskId }).orFail(
       new Error(`Delete taskId: ${taskId} has error`)
     )
-    return deletedTask.toObject()
+    return this.toEntity(deletedTask)
+  }
+
+  private toEntity(doc: ITaskModelDocument): Task {
+    return {
+      id: doc._id.toString(),
+      completedAt: doc.completedAt,
+      title: doc.title,
+      status: doc.status, // === 'active' ? TaskStatus.ACTIVE : TaskStatus.COMPLETED
+      createdAt: doc.createdAt
+    }
+  }
+
+  private toListEntity(listTask: ITaskModelDocument[]): Task[] {
+    return listTask && listTask.length > 0 ? listTask.map((x) => this.toEntity(x)) : []
   }
 }

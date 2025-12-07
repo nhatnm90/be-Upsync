@@ -1,6 +1,4 @@
-import mongoose from 'mongoose'
 import { Request, Response, NextFunction } from 'express'
-import Task from '../models/Tasks'
 import { taskContainer } from '../container/taskContainer'
 import { BadRequestError } from '../types/httpError'
 
