@@ -1,17 +1,17 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import UserSessionModel from '@/insfrastructure/persistence/models/userSessionModel'
 import { NextFunction, Request, Response } from 'express'
+import UserSessionModel from '../../insfrastructure/persistence/models/userSessionModel'
 import {
   BadRequestError,
   ConflictError,
   ForbiddenError,
   InternalServerError,
   UnauthorizedError
-} from '@/types/httpError'
-import { userContainer } from '@/presentation/container/userContainer'
-import { userSessionContainer } from '@/presentation/container/userSessionContainer'
+} from '../../types/httpError'
+import { userContainer } from '../container/userContainer'
+import { userSessionContainer } from '../container/userSessionContainer'
 
 const ACCESS_TOKEN_TTL = '30m'
 const REFRESH_TOKEN_TTL = 1000 * 60 * 60 * 24 * 14

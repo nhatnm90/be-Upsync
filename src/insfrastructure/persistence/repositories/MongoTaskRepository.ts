@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import TaskModel, { ITaskModelDocument } from '../models/taskModel'
-import { ITaskRepository } from '@/application/interface/ITaskRepository'
-import { Task } from '@/domain/entities/task'
+import { ITaskRepository } from '../../../application/interface/ITaskRepository'
+import { Task } from '../../../domain/entities/task'
 
 export class MongoTaskRepository implements ITaskRepository {
   async getAllTasks(

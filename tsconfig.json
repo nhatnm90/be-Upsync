@@ -42,11 +42,7 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "baseUrl": "src",
-    "paths": {
-      "@/*": ["*"]
-    }
+    "skipLibCheck": true
   },
   "include": ["src"]
 }

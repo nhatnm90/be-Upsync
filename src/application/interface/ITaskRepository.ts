@@ -1,4 +1,4 @@
-import { Task } from '@/domain/entities/task'
+import { Task } from '../../domain/entities/task'
 
 export interface ITaskRepository {
   getAllTasks(userId: string, filter: string): Promise<{ tasks: Task[]; activeTask: number; completedTask: number }>

@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express'
-import { AuthRequest } from '@/types/auth'
+import { AuthRequest } from '../../types/auth'
 
 const authMe = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

@@ -1,6 +1,6 @@
-import { IUserRepository } from '@/application/interface/IUserRepository'
-import { User } from '@/domain/entities/user'
-import UserModel, { IUserModelDocument } from '@/insfrastructure/persistence/models/userModel'
+import { IUserRepository } from '../../../application/interface/IUserRepository'
+import { User } from '../../../domain/entities/user'
+import UserModel, { IUserModelDocument } from '../models/userModel'
 
 export class MongoUserRepository implements IUserRepository {
   async create(payload: Partial<User>): Promise<User> {

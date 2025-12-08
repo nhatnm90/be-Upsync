@@ -1,6 +1,6 @@
-import { IUserSessionRepository } from '@/application/interface/IUserSessionRepository'
-import { UserSession } from '@/domain/entities/userSession'
-import UserSessionModel from '@/insfrastructure/persistence/models/userSessionModel'
+import { IUserSessionRepository } from '../../../application/interface/IUserSessionRepository'
+import { UserSession } from '../../../domain/entities/userSession'
+import UserSessionModel from '../models/userSessionModel'
 
 export class MongoUserSessionRepository implements IUserSessionRepository {
   async create(userSession: Partial<UserSession>): Promise<void> {

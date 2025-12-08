@@ -1,5 +1,5 @@
-import { IUserRepository } from '@/application/interface/IUserRepository'
-import { User } from '@/domain/entities/user'
+import { User } from '../../domain/entities/user'
+import { IUserRepository } from '../interface/IUserRepository'
 
 export class UserService {
   constructor(private userRepo: IUserRepository) {}

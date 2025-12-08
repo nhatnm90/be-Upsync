@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
-import { BadRequestError } from '@/types/httpError'
-import { taskContainer } from '@/presentation/container/taskContainer'
+import { BadRequestError } from '../../types/httpError'
+import { taskContainer } from '../container/taskContainer'
 
 export const getAllTasks = async (req: Request, res: Response, next: NextFunction) => {
   try {
