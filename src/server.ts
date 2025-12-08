@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
-import app from './app'
-import { db } from './config/db'
+import app from '@/app'
+import { db } from '@/insfrastructure/config/db'
 
 const PORT = process.env.PORT || 2101
 const MONGODB_CONNECTIONSTRING = process.env.MONGODB_CONNECTIONSTRING as string

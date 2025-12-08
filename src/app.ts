@@ -1,11 +1,11 @@
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import authRoute from './insfrastructure/express/routes/authRoute'
-import taskRoute from './insfrastructure/express/routes/tasksRoute'
-import userRoute from './insfrastructure/express/routes/userRoute'
-import { protectRoute } from './insfrastructure/persistence/middlewares/authMiddleware'
-import { globalErrorMiddleware } from './insfrastructure/persistence/middlewares/globalErrorMiddleware'
+import authRoute from '@/insfrastructure/express/routes/authRoute'
+import taskRoute from '@/insfrastructure/express/routes/tasksRoute'
+import userRoute from '@/insfrastructure/express/routes/userRoute'
+import { protectRoute } from '@/insfrastructure/middlewares/authMiddleware'
+import { globalErrorMiddleware } from '@/insfrastructure/middlewares/globalErrorMiddleware'
 
 const app = express()
 

@@ -1,4 +1,4 @@
-import { UserSession } from '../../domain/entities/userSession'
+import { UserSession } from '@/domain/entities/userSession'
 
 export interface IUserSessionRepository {
   create(userSesion: Partial<UserSession>): Promise<void>

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { HttpError } from '../../../types/httpError'
+import { HttpError } from '@/types/httpError'
 
 export const globalErrorMiddleware = (err: Error, req: Request, res: Response, next: NextFunction) => {
   // 1. Khởi tạo giá trị mặc định cho lỗi 500

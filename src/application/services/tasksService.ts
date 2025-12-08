@@ -1,5 +1,5 @@
-import { Task } from '../../domain/entities/task'
-import { ITaskRepository } from '../interface/ITaskRepository'
+import { ITaskRepository } from '@/application/interface/ITaskRepository'
+import { Task } from '@/domain/entities/task'
 
 export class TaskService {
   constructor(private taskRepo: ITaskRepository) {}

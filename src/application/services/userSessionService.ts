@@ -1,5 +1,5 @@
-import { UserSession } from '../../domain/entities/userSession'
-import { IUserSessionRepository } from '../interface/IUserSessionRepository'
+import { IUserSessionRepository } from '@/application/interface/IUserSessionRepository'
+import { UserSession } from '@/domain/entities/userSession'
 
 export class UserSessionService {
   constructor(private userSessionRepo: IUserSessionRepository) {}
