@@ -12,6 +12,8 @@ import {
 } from '../../types/httpError'
 import { userContainer } from '../container/userContainer'
 import { userSessionContainer } from '../container/userSessionContainer'
+import { dbPostgres } from '../../drizzle'
+import { user } from '../../drizzle/schema'
 
 const ACCESS_TOKEN_TTL = '30m'
 const REFRESH_TOKEN_TTL = 1000 * 60 * 60 * 24 * 14
@@ -103,6 +105,16 @@ const signInWithExternal = async (req: Request, res: Response, next: NextFunctio
         username: `${username}_${new Date().getMilliseconds()}`,
         avatarUrl
       })
+    }
+
+    //Create new user on Postgres
+    const pUser = await dbPostgres.query.user.findFirst({
+      where: (t, f) => f.eq(t.mongoUserId, exitedUser.id)
+    })
+    if (!pUser) {
+      await dbPostgres
+        .insert(user)
+        .values({ mongoUserId: exitedUser.id, username: exitedUser.username, email: exitedUser.email })
     }
 
     if (!exitedUser) {
